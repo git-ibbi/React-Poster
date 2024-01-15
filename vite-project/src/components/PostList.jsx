@@ -1,14 +1,34 @@
 import Post from "./Post";
 import classes from "./PostList.module.css";
 import NewPost from "./NewPost";
-const PostList = () => {
+import Modal from "./Modal";
+import { useState } from "react";
+
+const PostList = ({ isPosting, onStopPosting }) => {
+  const [posts, setPosts] = useState([]);
+  function addPostHandler(postData) {
+    setPosts((existingPosts) => [postData, ...existingPosts]);
+  }
   return (
     <>
-      <NewPost />
-      <ul className={classes.posts}>
-        <Post author="Maximilian" body="hello from Maximilian" />
-        <Post author="Manuel" body="hello from Manuel" />
-      </ul>
+      {isPosting && (
+        <Modal onClose={onStopPosting}>
+          <NewPost onCancel={onStopPosting} onAddPost={addPostHandler} />
+        </Modal>
+      )}
+      {posts.length > 0 && (
+        <ul className={classes.posts}>
+          {posts.map((post) => (
+            <Post key={post.body} author={post.author} body={post.body} />
+          ))}
+        </ul>
+      )}
+      {posts.length === 0 && (
+        <div style={{ textAlign: "center", color: "white" }}>
+          <h2>There are no post's yet</h2>
+          <p>Start adding some</p>
+        </div>
+      )}
     </>
   );
 };
